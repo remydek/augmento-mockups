@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import useSceneStore from '../../store/useSceneStore'
 
@@ -19,6 +20,13 @@ export default function GLBModel({ id, url, position = [0, 0, 0], rotation = [0,
       }
     })
   }, [scene])
+  
+  // Add slow rotation animation
+  useFrame((state, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.2
+    }
+  })
   
   const handleClick = (e) => {
     e.stopPropagation()

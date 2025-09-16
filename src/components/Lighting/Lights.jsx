@@ -3,44 +3,38 @@ import { ContactShadows, Environment } from '@react-three/drei'
 import useSceneStore from '../../store/useSceneStore'
 
 export default function Lights() {
-  const { shadows, environment } = useSceneStore()
+  const { shadows } = useSceneStore()
 
   return (
     <>
       {/* Environment for realistic lighting */}
-      <Environment preset={environment} background={false} />
+      <Environment preset="city" background={false} />
       
       {/* Ambient lighting */}
-      <hemisphereLight intensity={0.4} color="#ffffff" groundColor="#404040" />
+      <ambientLight intensity={0.6} />
       
       {/* Key light with shadows */}
       <directionalLight
         castShadow={shadows}
-        position={[5, 10, 5]}
-        intensity={1.2}
-        shadow-mapSize={[2048, 2048]}
+        position={[2, 3, 2]}
+        intensity={1.0}
+        shadow-mapSize={[1024, 1024]}
         shadow-camera-near={0.1}
-        shadow-camera-far={50}
-        shadow-camera-left={-10}
-        shadow-camera-right={10}
-        shadow-camera-top={10}
-        shadow-camera-bottom={-10}
+        shadow-camera-far={10}
+        shadow-camera-left={-2}
+        shadow-camera-right={2}
+        shadow-camera-top={2}
+        shadow-camera-bottom={-2}
       />
       
-      {/* Ground plane for shadows */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow={shadows}>
-        <planeGeometry args={[100, 100]} />
-        <shadowMaterial opacity={0.4} />
-      </mesh>
-      
-      {/* Contact shadows for realistic grounding */}
+      {/* Contact shadows for realistic grounding - smaller scale */}
       {shadows && (
         <ContactShadows
-          position={[0, 0, 0]}
-          opacity={0.7}
-          scale={10}
-          blur={2.5}
-          far={20}
+          position={[0, -0.8, 0]}
+          opacity={0.4}
+          scale={2}
+          blur={1.5}
+          far={4}
           resolution={256}
         />
       )}

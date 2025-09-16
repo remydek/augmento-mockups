@@ -27,14 +27,14 @@ function Models() {
 }
 
 export default function SceneRoot() {
-  const { cameraFov, shadows } = useSceneStore()
+  const { shadows } = useSceneStore()
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 10 }}>
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <Canvas
         shadows={shadows}
         dpr={[1, 2]}
-        camera={{ fov: cameraFov, near: 0.01, far: 100, position: [0, 1.6, 3] }}
+        camera={{ fov: 45, near: 0.01, far: 100, position: [0, 0, 2] }}
         gl={{
           antialias: true,
           alpha: true,
@@ -43,12 +43,10 @@ export default function SceneRoot() {
         }}
       >
         <Suspense fallback={null}>
-          <ARCameraController />
           <Lights />
           <Models />
         </Suspense>
       </Canvas>
-      <Loader />
     </div>
   )
 }
