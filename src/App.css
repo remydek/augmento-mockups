@@ -22,7 +22,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
+  padding: 30px;
   background: #1a1a1a;
 }
 
@@ -30,18 +30,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
+  max-height: calc(100vh - 60px);
 }
 
 .phone-frame {
-  width: 350px;
-  height: 714px;
+  width: 487px;
+  height: 994px;
   position: relative;
   background: #000;
-  border-radius: 30px;
-  padding: 15px;
+  border-radius: 40px;
+  padding: 20px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   overflow: hidden;
-  transform: scale(0.72);
+  max-height: 850px;
+  max-width: 417px;
+  /* Scale to fit available space */
+  transform: scale(min(
+    calc((100vh - 60px) / 994px),
+    calc(100% / 487px),
+    calc(850px / 994px)
+  ));
   transform-origin: center;
 }
 
@@ -71,10 +80,10 @@
 /* Quiz Overlay */
 .quiz-overlay {
   position: absolute;
-  top: 112px;
-  left: 33px;
-  width: 288px;
-  height: 428px;
+  top: 156px;
+  left: 46px;
+  width: 401px;
+  height: 596px;
   z-index: 10;
 }
 
@@ -103,7 +112,7 @@
 .quiz-title {
   font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 700;
-  font-size: 42px;
+  font-size: 58px;
   line-height: 1.56;
   color: #FFFFFF;
   text-align: center;
@@ -176,13 +185,13 @@
 .question-text {
   font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 19px;
   line-height: 1.4;
   color: #FFFFFF;
-  margin-bottom: 30px;
-  padding: 15px;
+  margin-bottom: 40px;
+  padding: 20px;
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 .answer-options {
@@ -192,12 +201,12 @@
 }
 
 .answer-option {
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 1px solid #FFFFFF;
-  border-radius: 8px;
+  border-radius: 10px;
   font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.56;
   color: #FFFFFF;
   cursor: pointer;
@@ -241,10 +250,10 @@
 /* AR Model Area */
 .ar-model-area {
   position: absolute;
-  bottom: 36px;
-  left: 130px;
-  width: 114px;
-  height: 106px;
+  bottom: 50px;
+  left: 181px;
+  width: 159px;
+  height: 148px;
   z-index: 5;
 }
 
