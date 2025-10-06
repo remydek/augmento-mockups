@@ -54,36 +54,16 @@ export default function CameraFeed() {
   if (!showVideoBackground) return null
   
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      zIndex: 1,
-      background: '#000'
-    }}>
+    <div className="camera-feed-container">
       <video
         ref={videoRef}
         autoPlay
         playsInline
         muted
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover'
-        }}
+        className="camera-feed-video"
       />
       {!hasPermission && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          color: 'white',
-          textAlign: 'center',
-          fontSize: '14px'
-        }}>
+        <div className="camera-permission-message">
           Camera permission required for AR background
         </div>
       )}

@@ -9,6 +9,8 @@ useGLTF.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/')
 export default function GLBModel({ id, url, position = [0, 0, 0], rotation = [0, 0, 0], scale = 1 }) {
   const { scene } = useGLTF(url)
   const select = useSceneStore((state) => state.select)
+  const enableBounce = useSceneStore((state) => state.enableBounce)
+  const enableRotation = useSceneStore((state) => state.enableRotation)
   const groupRef = useRef()
   
   // Set up shadows for all meshes in the model
@@ -21,10 +23,22 @@ export default function GLBModel({ id, url, position = [0, 0, 0], rotation = [0,
     })
   }, [scene])
   
-  // Add slow rotation animation
-  useFrame((state, delta) => {
+  // Add animations based on settings
+  useFrame((state) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.2
+      // Bounce animation (up-down motion)
+      if (enableBounce) {
+        groupRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 1.5) * 0.1
+      } else {
+        groupRef.current.position.y = position[1]
+      }
+
+      // Rotation animation (spin around Y-axis)
+      if (enableRotation) {
+        groupRef.current.rotation.y = rotation[1] + state.clock.elapsedTime * 0.5
+      } else {
+        groupRef.current.rotation.y = rotation[1]
+      }
     }
   })
   
@@ -34,18 +48,18 @@ export default function GLBModel({ id, url, position = [0, 0, 0], rotation = [0,
   }
   
   return (
-    <group 
+    <group
       ref={groupRef}
       position={position}
       rotation={rotation}
-      scale={scale}
+      scale={[scale, scale, scale]}
       onClick={handleClick}
       onPointerDown={handleClick}
     >
-      <primitive object={scene} />
+      <primitive object={scene} scale={[-1, 1, 1]} />
     </group>
   )
 }
 
 // Preload the default sample model
-useGLTF.preload('/models/DamagedHelmet.glb')
+useGLTF.preload('/models/heart-red.glb')

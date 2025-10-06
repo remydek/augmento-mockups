@@ -1,42 +1,71 @@
 import React from 'react'
 import { ContactShadows, Environment } from '@react-three/drei'
+import * as THREE from 'three'
 import useSceneStore from '../../store/useSceneStore'
 
 export default function Lights() {
-  const { shadows } = useSceneStore()
+  const {
+    shadows,
+    environment,
+    lightPosition,
+    lightIntensity,
+    lightDistance,
+    shadowRadius,
+    contactShadowBlur,
+    contactShadowOpacity
+  } = useSceneStore()
 
   return (
     <>
       {/* Environment for realistic lighting */}
-      <Environment preset="city" background={false} />
-      
-      {/* Ambient lighting */}
-      <ambientLight intensity={0.6} />
-      
-      {/* Key light with shadows */}
-      <directionalLight
+      <Environment preset={environment} background={false} />
+
+      {/* Minimal ambient lighting */}
+      <ambientLight intensity={0.3} />
+
+      {/* Single BIG omni light high above for soft shadows */}
+      <pointLight
         castShadow={shadows}
-        position={[2, 3, 2]}
-        intensity={1.0}
-        shadow-mapSize={[1024, 1024]}
+        position={lightPosition}
+        intensity={lightIntensity}
+        color="#ffffff"
+        distance={lightDistance}
+        decay={1}
+        shadow-mapSize={[4096, 4096]}
         shadow-camera-near={0.1}
-        shadow-camera-far={10}
-        shadow-camera-left={-2}
-        shadow-camera-right={2}
-        shadow-camera-top={2}
-        shadow-camera-bottom={-2}
+        shadow-camera-far={lightDistance}
+        shadow-radius={shadowRadius}
+        shadow-bias={-0.0001}
       />
       
-      {/* Contact shadows for realistic grounding - smaller scale */}
+      {/* Shadow catcher plane for actual model shadows */}
       {shadows && (
-        <ContactShadows
-          position={[0, -0.8, 0]}
-          opacity={0.4}
-          scale={2}
-          blur={1.5}
-          far={4}
-          resolution={256}
-        />
+        <>
+          {/* Soft shadow catcher plane */}
+          <mesh
+            receiveShadow
+            position={[0, -0.9, 0]}
+            rotation={[-Math.PI / 2, 0, 0]}
+          >
+            <planeGeometry args={[10, 10]} />
+            <shadowMaterial
+              transparent
+              opacity={0.2}
+              color="#000000"
+            />
+          </mesh>
+
+          {/* Enhanced contact shadows for softer ground effect */}
+          <ContactShadows
+            position={[0, -0.85, 0]}
+            opacity={contactShadowOpacity}
+            scale={4}
+            blur={contactShadowBlur}
+            far={6}
+            resolution={2048}
+            smooth={true}
+          />
+        </>
       )}
     </>
   )
