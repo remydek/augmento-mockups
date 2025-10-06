@@ -86,11 +86,16 @@ Return ONLY the JSON, nothing else.`
       throw new Error('Invalid response structure from AI')
     }
 
-    // Add fallback images using picsum.photos (always works)
-    data.rewards = data.rewards.map((reward, index) => ({
-      ...reward,
-      imageUrl: `https://picsum.photos/seed/${topic}-${index}-${Date.now()}/400/300`
-    }))
+    // Generate relevant Google Images-style URLs based on reward titles
+    data.rewards = data.rewards.map((reward, index) => {
+      // Create a search-friendly query from the reward title
+      const searchQuery = encodeURIComponent(reward.title)
+      // Use Unsplash source API which provides actual photos based on search terms
+      return {
+        ...reward,
+        imageUrl: `https://source.unsplash.com/400x400/?${searchQuery}`
+      }
+    })
 
     return data
   } catch (error) {
