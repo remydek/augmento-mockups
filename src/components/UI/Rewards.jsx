@@ -8,6 +8,7 @@ export default function Rewards({ rewardsData }) {
     2: null,
     3: null
   })
+  const [imageErrors, setImageErrors] = useState({})
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [rewardsTitle, setRewardsTitle] = useState('Rewards')
   const [editingReward, setEditingReward] = useState(null)
@@ -58,14 +59,20 @@ export default function Rewards({ rewardsData }) {
       })
       setRewards(newRewards)
 
-      // Set images from URLs
-      const newImages = {}
-      rewardsData.forEach((reward, index) => {
-        if (reward.imageUrl) {
-          newImages[index] = reward.imageUrl
-        }
+      // Set images from URLs, but preserve manually uploaded images
+      setRewardImages(prevImages => {
+        const newImages = { ...prevImages }
+        rewardsData.forEach((reward, index) => {
+          // Only update if there's no manually uploaded image
+          if (reward.imageUrl && !prevImages[index]) {
+            newImages[index] = reward.imageUrl
+          } else if (reward.imageUrl && prevImages[index] && !prevImages[index].startsWith('blob:')) {
+            // Update if previous image was also from URL (not manual upload)
+            newImages[index] = reward.imageUrl
+          }
+        })
+        return newImages
       })
-      setRewardImages(newImages)
     }
   }, [rewardsData, userCoins])
 
@@ -76,6 +83,11 @@ export default function Rewards({ rewardsData }) {
       setRewardImages(prev => ({
         ...prev,
         [rewardId]: imageUrl
+      }))
+      // Clear error state for this image
+      setImageErrors(prev => ({
+        ...prev,
+        [rewardId]: false
       }))
     }
   }
@@ -138,14 +150,14 @@ export default function Rewards({ rewardsData }) {
                 className="reward-image clickable"
                 onClick={() => triggerFileInput(reward.id)}
               >
-                {rewardImages[reward.id] ? (
+                {rewardImages[reward.id] && !imageErrors[reward.id] ? (
                   <img
                     src={rewardImages[reward.id]}
                     alt={reward.title}
-                    onError={(e) => {
-                      e.target.style.display = 'none'
-                      e.target.parentElement.innerHTML = '<div class="reward-image-placeholder"><span>📷</span></div>' + e.target.parentElement.querySelector('input').outerHTML
+                    onError={() => {
+                      setImageErrors(prev => ({ ...prev, [reward.id]: true }))
                     }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 ) : (
                   <div className="reward-image-placeholder">
