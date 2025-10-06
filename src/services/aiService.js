@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
 
 const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
+const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyDPSbRmryIOdzJcKAa7VnubKvJP09aWwTc'
+const googleSearchEngineId = import.meta.env.VITE_GOOGLE_SEARCH_ENGINE_ID || '178e9982e21be43fe'
 
 if (!apiKey) {
   console.error('VITE_ANTHROPIC_API_KEY is not set in environment variables')
@@ -10,6 +12,26 @@ const client = new Anthropic({
   apiKey: apiKey,
   dangerouslyAllowBrowser: true
 })
+
+// Fetch image from Google Custom Search API
+async function fetchGoogleImage(query) {
+  try {
+    const searchQuery = encodeURIComponent(query)
+    const url = `https://www.googleapis.com/customsearch/v1?key=${googleApiKey}&cx=${googleSearchEngineId}&q=${searchQuery}&searchType=image&imgSize=medium&num=1`
+
+    const response = await fetch(url)
+    const data = await response.json()
+
+    if (data.items && data.items.length > 0) {
+      return data.items[0].link
+    }
+
+    return null
+  } catch (error) {
+    console.error('Error fetching Google image:', error)
+    return null
+  }
+}
 
 export async function generateQuizContent(topic) {
   if (!apiKey) {
@@ -86,17 +108,26 @@ Return ONLY the JSON, nothing else.`
       throw new Error('Invalid response structure from AI')
     }
 
-    // Generate relevant Google Images-style URLs based on reward titles
-    data.rewards = data.rewards.map((reward, index) => {
-      // Create a search-friendly query from the reward title
-      const searchQuery = encodeURIComponent(reward.title)
-      // Use Unsplash source API which provides actual photos based on search terms
-      return {
-        ...reward,
-        imageUrl: `https://source.unsplash.com/400x400/?${searchQuery}`
-      }
-    })
+    // Fetch actual images from Google Custom Search API
+    const rewardsWithImages = await Promise.all(
+      data.rewards.map(async (reward, index) => {
+        try {
+          const imageUrl = await fetchGoogleImage(reward.title)
+          return {
+            ...reward,
+            imageUrl: imageUrl || `https://via.placeholder.com/400x400?text=${encodeURIComponent(reward.title)}`
+          }
+        } catch (error) {
+          console.error(`Failed to fetch image for ${reward.title}:`, error)
+          return {
+            ...reward,
+            imageUrl: `https://via.placeholder.com/400x400?text=${encodeURIComponent(reward.title)}`
+          }
+        }
+      })
+    )
 
+    data.rewards = rewardsWithImages
     return data
   } catch (error) {
     console.error('Error generating quiz content:', error)
