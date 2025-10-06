@@ -1,11 +1,20 @@
 import Anthropic from '@anthropic-ai/sdk'
 
+const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
+
+if (!apiKey) {
+  console.error('VITE_ANTHROPIC_API_KEY is not set in environment variables')
+}
+
 const client = new Anthropic({
-  apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY,
+  apiKey: apiKey,
   dangerouslyAllowBrowser: true
 })
 
 export async function generateQuizContent(topic) {
+  if (!apiKey) {
+    throw new Error('API key not configured. Please add VITE_ANTHROPIC_API_KEY to your environment variables.')
+  }
   const prompt = `Generate a quiz question and rewards about "${topic}".
 
 Please respond with ONLY a valid JSON object (no markdown, no code blocks) in this exact format:
