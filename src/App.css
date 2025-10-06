@@ -1521,7 +1521,7 @@
 
 .edit-icon-small {
   font-size: 12px;
-  opacity: 0.6;
+  opacity: 0;
   transition: opacity 0.2s ease;
 }
 
