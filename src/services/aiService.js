@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 
 const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
 const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyDPSbRmryIOdzJcKAa7VnubKvJP09aWwTc'
-const googleSearchEngineId = import.meta.env.VITE_GOOGLE_SEARCH_ENGINE_ID || '178e9982e21be43fe'
+const googleSearchEngineId = import.meta.env.VITE_GOOGLE_SEARCH_ENGINE_ID || 'd58a16c2537b94d9f'
 
 if (!apiKey) {
   console.error('VITE_ANTHROPIC_API_KEY is not set in environment variables')
