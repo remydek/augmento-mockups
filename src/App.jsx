@@ -168,6 +168,7 @@ function App() {
     <div className="app-layout">
       {/* Left side - Control Panel */}
       <div className="controls-side">
+        <img src="/logo_augmento_purple.svg" alt="Augmento" className="augmento-logo" />
         <ControlPanel currentTab={activeTab} />
       </div>
 
