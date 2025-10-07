@@ -59,6 +59,12 @@ function App() {
       setRewardsData(data.rewards)
       setShowAIPrompt(false)
 
+      // Show cost notification
+      if (data.cost !== undefined) {
+        const costFormatted = data.cost < 0.01 ? `$${data.cost.toFixed(6)}` : `$${data.cost.toFixed(4)}`
+        alert(`✅ Quiz generated successfully!\n\nClaude API Cost: ${costFormatted}`)
+      }
+
       // Auto-switch to quiz tab to show the generated content
       setActiveTab('quiz')
     } catch (error) {

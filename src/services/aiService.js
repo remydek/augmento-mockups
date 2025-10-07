@@ -95,6 +95,19 @@ Return ONLY the JSON, nothing else.`
     const responseText = message.content[0].text
     console.log('AI Response:', responseText)
 
+    // Calculate cost based on usage
+    const inputTokens = message.usage.input_tokens
+    const outputTokens = message.usage.output_tokens
+
+    // Claude 3 Haiku pricing (as of 2024)
+    // Input: $0.25 per million tokens
+    // Output: $1.25 per million tokens
+    const inputCost = (inputTokens / 1_000_000) * 0.25
+    const outputCost = (outputTokens / 1_000_000) * 1.25
+    const totalCost = inputCost + outputCost
+
+    console.log('Usage:', { inputTokens, outputTokens, totalCost: `$${totalCost.toFixed(6)}` })
+
     // Parse the JSON response
     const jsonMatch = responseText.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
@@ -128,6 +141,7 @@ Return ONLY the JSON, nothing else.`
     )
 
     data.rewards = rewardsWithImages
+    data.cost = totalCost // Add cost to returned data
     return data
   } catch (error) {
     console.error('Error generating quiz content:', error)
