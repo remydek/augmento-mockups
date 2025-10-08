@@ -30,8 +30,9 @@ const useSceneStore = create((set) => ({
     if (exists) {
       return state // Don't add duplicate
     }
+    // Only allow one model at a time - replace existing model
     return {
-      models: [...state.models, model],
+      models: [model],
       selectedId: model.id
     }
   }),

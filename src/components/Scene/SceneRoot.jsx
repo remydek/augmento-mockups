@@ -47,7 +47,7 @@ export default function SceneRoot() {
   const { shadows } = useSceneStore()
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', position: 'relative', transform: 'scaleX(-1)' }}>
       <Canvas
         shadows={shadows}
         dpr={[1, 2]}
