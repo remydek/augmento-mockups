@@ -37,17 +37,39 @@ export async function generateQuizContent(topic) {
   if (!apiKey) {
     throw new Error('API key not configured. Please add VITE_ANTHROPIC_API_KEY to your environment variables.')
   }
-  const prompt = `Generate a quiz question and rewards about "${topic}".
+  const prompt = `Generate 3 quiz questions and rewards about "${topic}".
 
 Please respond with ONLY a valid JSON object (no markdown, no code blocks) in this exact format:
 {
-  "question": "A challenging quiz question about ${topic}",
-  "answers": [
-    "Correct answer",
-    "Wrong answer 1",
-    "Wrong answer 2"
+  "questions": [
+    {
+      "question": "First challenging quiz question about ${topic}",
+      "answers": [
+        "Correct answer",
+        "Wrong answer 1",
+        "Wrong answer 2"
+      ],
+      "correctAnswerIndex": 0
+    },
+    {
+      "question": "Second challenging quiz question about ${topic}",
+      "answers": [
+        "Correct answer",
+        "Wrong answer 1",
+        "Wrong answer 2"
+      ],
+      "correctAnswerIndex": 0
+    },
+    {
+      "question": "Third challenging quiz question about ${topic}",
+      "answers": [
+        "Correct answer",
+        "Wrong answer 1",
+        "Wrong answer 2"
+      ],
+      "correctAnswerIndex": 0
+    }
   ],
-  "correctAnswerIndex": 0,
   "rewards": [
     {
       "title": "Premium reward related to ${topic}",
@@ -73,8 +95,10 @@ Please respond with ONLY a valid JSON object (no markdown, no code blocks) in th
 }
 
 Requirements:
-- Question should be engaging and moderately challenging
-- Provide exactly 3 answers, with the correct one first
+- Generate exactly 3 different questions about ${topic}
+- Each question should be engaging and moderately challenging
+- Each question should have exactly 3 answers, with the correct one first
+- Questions should vary in difficulty and cover different aspects of ${topic}
 - Rewards should be creative and related to the topic
 - Use realistic coin values (50-999)
 - For imageUrl, use actual working URLs from unsplash.com for relevant images (format: https://images.unsplash.com/photo-[id]?w=400)
@@ -117,9 +141,16 @@ Return ONLY the JSON, nothing else.`
     const data = JSON.parse(jsonMatch[0])
 
     // Validate the response structure
-    if (!data.question || !Array.isArray(data.answers) || data.answers.length !== 3 || !Array.isArray(data.rewards)) {
+    if (!Array.isArray(data.questions) || data.questions.length !== 3 || !Array.isArray(data.rewards)) {
       throw new Error('Invalid response structure from AI')
     }
+
+    // Validate each question
+    data.questions.forEach((q, index) => {
+      if (!q.question || !Array.isArray(q.answers) || q.answers.length !== 3) {
+        throw new Error(`Invalid question structure at index ${index}`)
+      }
+    })
 
     // Fetch actual images from Google Custom Search API
     const rewardsWithImages = await Promise.all(

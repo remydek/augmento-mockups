@@ -50,11 +50,19 @@ function App() {
       const data = await generateQuizContent(topic)
       console.log('Generated content:', data)
 
-      setQuizData({
-        question: data.question,
-        answers: data.answers,
-        correctAnswerIndex: data.correctAnswerIndex
-      })
+      // Check if we have multiple questions (new format)
+      if (Array.isArray(data.questions) && data.questions.length > 0) {
+        setQuizData({
+          questions: data.questions
+        })
+      } else {
+        // Fallback for single question format
+        setQuizData({
+          question: data.question,
+          answers: data.answers,
+          correctAnswerIndex: data.correctAnswerIndex
+        })
+      }
 
       setRewardsData(data.rewards)
       setShowAIPrompt(false)
